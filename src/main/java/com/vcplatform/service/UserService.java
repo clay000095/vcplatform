@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.vcplatform.repository.UserRepository;
 import com.vcplatform.model.User;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -16,5 +17,9 @@ public class UserService {
         }
         userRepository.save(user);
         return true;
+    }
+    
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

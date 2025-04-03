@@ -30,7 +30,7 @@ public class DataTester implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepo.count() > 0) {
-            System.out.println("✅ 已有資料，跳過測資初始化");
+            System.out.println("已有資料，跳過測資初始化");
             return;
         }
 
@@ -58,6 +58,6 @@ public class DataTester implements CommandLineRunner {
 
         investRepo.save(inv1);
 
-        System.out.println("🚀 測試資料初始化完成！");
+        System.out.println("測試資料初始化完成！");
     }
 }
