@@ -6,7 +6,8 @@ const api = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 });
 
 // 請求攔截器
@@ -25,7 +26,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   response => response,
   error => {
-    console.error('API 錯誤:', error);
+    if (error.response) {
+      console.error('Response error:', error.response.data);
+    } else if (error.request) {
+      console.error('Request error:', error.request);
+    } else {
+      console.error('Error:', error.message);
+    }
     return Promise.reject(error);
   }
 );

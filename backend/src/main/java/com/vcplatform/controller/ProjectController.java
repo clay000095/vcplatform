@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.vcplatform.model.Investment;
 import com.vcplatform.model.Project;
@@ -18,11 +19,16 @@ import com.vcplatform.service.ProjectService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/projects")
 @Tag(name = "創業者與專案")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ProjectController {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
+
     @Autowired private ProjectService projectService;
 
     @PostMapping
@@ -38,7 +44,15 @@ public class ProjectController {
 
     @GetMapping
     public List<Project> approved() {
-        return projectService.getApproved();
+        logger.info("Fetching approved projects");
+        try {
+            List<Project> projects = projectService.getApproved();
+            logger.info("Found {} approved projects", projects.size());
+            return projects;
+        } catch (Exception e) {
+            logger.error("Error fetching approved projects", e);
+            throw e;
+        }
     }
 
     @GetMapping("/{id}")
