@@ -30,18 +30,16 @@ public class DataTester implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepo.count() > 0) {
-            System.out.println("已有資料，跳過測資初始化");
+            System.out.println("有資料啦");
             return;
         }
 
-        // 👤 使用者
         User founder = new User(null, "founder@mail.com", "123", "FOUNDER");
         User investor = new User(null, "investor@mail.com", "123", "INVESTOR");
         User admin = new User(null, "admin@mail.com", "123", "ADMIN");
 
         userRepo.saveAll(List.of(founder, investor, admin));
 
-        // 💼 專案
         Project p1 = new Project(null, "AI 圖像生成平台", "一句話產生精美圖片",
                 new BigDecimal("50000"), BigDecimal.ZERO, "PENDING",
                 founder.getId(), LocalDateTime.now());
@@ -52,7 +50,6 @@ public class DataTester implements CommandLineRunner {
 
         projectRepo.saveAll(List.of(p1, p2));
 
-        // 💰 投資紀錄
         Investment inv1 = new Investment(null, investor.getId(), p2.getId(),
                 new BigDecimal("20000"), LocalDateTime.now());
 
