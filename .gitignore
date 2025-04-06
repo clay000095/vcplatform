@@ -1,0 +1,70 @@
+# 後端 Spring Boot 忽略項
+backend/HELP.md
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/*.log
+backend/logs/
+backend/.env
+
+# 後端 IDE 相關文件
+backend/.idea/
+backend/*.iws
+backend/*.iml
+backend/*.ipr
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.vscode/
+
+# 前端 Vue.js 忽略項
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/dist/
+frontend/dist-ssr/
+frontend/coverage/
+frontend/*.local
+
+# 前端 IDE 相關文件
+frontend/.vscode/*
+frontend/.idea/
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?
+
+# 系統文件
+.DS_Store
+Thumbs.db
+
+# 日誌文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 環境配置文件
+.env
+.env.local
+.env.development
+.env.production
+
+# 編譯緩存
+*.class
+*.jar
+*.war
+
+# 其他
+*.bak
+*.tmp
+*.temp
+
+# AWS 相關文件
+*.pem
+aws/
+credentials/ 
