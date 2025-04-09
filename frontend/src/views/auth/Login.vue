@@ -8,7 +8,7 @@
           <input
             type="email"
             id="email"
-            v-model="form.email"
+            v-model="email"
             required
             placeholder="請輸入電子郵件"
           />
@@ -19,7 +19,7 @@
           <input
             type="password"
             id="password"
-            v-model="form.password"
+            v-model="password"
             required
             placeholder="請輸入密碼"
           />
@@ -41,34 +41,52 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { authService } from '../../services/auth';
-import type { LoginRequest } from '../../types/user';
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 
-const router = useRouter();
-const loading = ref(false);
-const error = ref('');
+const router = useRouter()
+const authStore = useAuthStore()
 
-const form = ref<LoginRequest>({
-  email: '',
-  password: ''
-});
+const email = ref('')
+const password = ref('')
+const error = ref('')
+const loading = ref(false)
 
 const handleLogin = async () => {
-  loading.value = true;
-  error.value = '';
+  loading.value = true
+  error.value = ''
   
   try {
-    await authService.login(form.value);
-    router.push('/dashboard');
-  } catch (err: any) {
-    error.value = err.response?.data?.message || '登入失敗，請稍後再試';
+    await authStore.login({
+      email: email.value,
+      password: password.value
+    })
+    
+    // 登入成功後根據用戶角色導航
+    const userRole = authStore.user?.role
+    if (userRole) {
+      switch (userRole) {
+        case 'ADMIN':
+          router.push('/admin/dashboard')
+          break
+        case 'FOUNDER':
+          router.push('/founder/dashboard')
+          break
+        case 'INVESTOR':
+          router.push('/investor/dashboard')
+          break
+        default:
+          router.push('/')
+      }
+    }
+  } catch (err) {
+    error.value = err.message || '登入失敗，請稍後再試'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 </script>
 
 <style scoped>
