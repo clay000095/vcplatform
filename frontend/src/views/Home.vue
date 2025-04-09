@@ -31,24 +31,7 @@
         </div>
       </div>
     </div>
-    
-    <div class="how-it-works">
-      <div class="container">
-        <h2 v-motion-slide-visible-once-bottom>如何使用</h2>
-        <div class="steps">
-          <div class="step" 
-               v-for="(step, index) in steps" 
-               :key="index"
-               v-motion-slide-visible-once-bottom
-               :delay="index * 200">
-            <div class="step-number">{{ index + 1 }}</div>
-            <h3>{{ step.title }}</h3>
-            <p>{{ step.description }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
+    <HowToUse />    
     <div class="cta">
       <div class="container" v-motion-slide-visible-once-bottom>
         <h2>準備好開始了嗎？</h2>
@@ -63,11 +46,14 @@
         </div>
       </div>
     </div>
+
+    
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import HowToUse from '../components/HowToUse.vue'
 
 const features = ref([
   {
@@ -89,25 +75,6 @@ const features = ref([
     icon: '🌐',
     title: '全球視野',
     description: '連接全球創業者與投資者，打造國際化平台'
-  }
-])
-
-const steps = ref([
-  {
-    title: '註冊帳號',
-    description: '創建您的個人或企業帳號，完善個人資料'
-  },
-  {
-    title: '瀏覽項目',
-    description: '探索平台上的優質創業項目，了解詳情'
-  },
-  {
-    title: '投資或發布',
-    description: '投資感興趣的項目，或發布您的創業計劃'
-  },
-  {
-    title: '管理與追蹤',
-    description: '在個人儀表板中管理您的投資或項目進展'
   }
 ])
 </script>
