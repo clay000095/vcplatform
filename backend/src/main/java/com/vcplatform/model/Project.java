@@ -23,6 +23,7 @@ public class Project {
     private BigDecimal targetAmount;
     private BigDecimal currentAmount = BigDecimal.ZERO;
     private String status = "PENDING"; // APPROVED / REJECTED
+    private String category; // TECH, HEALTH, FINANCE, EDUCATION
     private Long founderId;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

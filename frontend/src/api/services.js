@@ -17,11 +17,6 @@ export const projectService = {
     return api.post('/projects', project);
   },
   
-  // 獲取熱門項目
-  getHotProjects() {
-    return api.get('/projects/hot');
-  },
-  
   // 按類別獲取項目
   getProjectsByCategory(category) {
     return api.get(`/projects/category/${category}`);
@@ -57,14 +52,4 @@ export const userService = {
   register(user) {
     return api.post('/auth/register', user);
   },
-  
-  // 獲取用戶資料
-  getUserProfile() {
-    return api.get('/user/profile');
-  },
-  
-  // 更新用戶資料
-  updateUserProfile(data) {
-    return api.put('/user/profile', data);
-  }
 }; 

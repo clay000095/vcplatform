@@ -5,7 +5,8 @@ const api = axios.create({
   baseURL: 'http://localhost:8080/api',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
   },
   withCredentials: true
 });
@@ -19,7 +20,10 @@ api.interceptors.request.use(
     }
     return config;
   },
-  error => Promise.reject(error)
+  error => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
 );
 
 // 響應攔截器

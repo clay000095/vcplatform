@@ -29,6 +29,10 @@ public class ProjectService {
         return projectRepo.findByStatus("PENDING");
     }
 
+    public List<Project> getByCategory(String category) {
+        return projectRepo.findByCategoryAndStatus(category, "APPROVED");
+    }
+
     public Optional<Project> get(Long id) {
         return projectRepo.findById(id);
     }

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.vcplatform.model.Investment;
 import com.vcplatform.model.Project;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/projects")
 @Tag(name = "創業者與專案")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
@@ -63,5 +61,19 @@ public class ProjectController {
     @GetMapping("/{id}/investors")
     public List<Investment> investors(@PathVariable Long id, @Autowired InvestmentService investService) {
         return investService.getByProject(id);
+    }
+    
+    @GetMapping("/category/{category}")
+    @Operation(summary = "按類別獲取項目")
+    public List<Project> getByCategory(@PathVariable String category) {
+        logger.info("Fetching projects by category: {}", category);
+        try {
+            List<Project> projects = projectService.getByCategory(category);
+            logger.info("Found {} projects in category {}", projects.size(), category);
+            return projects;
+        } catch (Exception e) {
+            logger.error("Error fetching projects by category: {}", category, e);
+            throw e;
+        }
     }
 }
