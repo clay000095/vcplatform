@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { projectService } from '../api/services';
 
@@ -85,7 +85,9 @@ const fetchProjects = async () => {
   loading.value = true;
   error.value = null;
   try {
+    console.log('Fetching projects for category:', props.category);
     const response = await projectService.getProjectsByCategory(props.category);
+    console.log('API Response:', response.data);
     projects.value = response.data;
   } catch (err) {
     error.value = '獲取專案列表失敗';
@@ -97,6 +99,14 @@ const fetchProjects = async () => {
 
 onMounted(() => {
   fetchProjects();
+});
+
+// 監聽 category 參數變化
+watch(() => props.category, (newCategory, oldCategory) => {
+  if (newCategory !== oldCategory) {
+    console.log('Category changed from', oldCategory, 'to', newCategory);
+    fetchProjects();
+  }
 });
 </script>
 
