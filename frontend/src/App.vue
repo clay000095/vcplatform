@@ -9,12 +9,31 @@
           <img src="/logo.svg" alt="VC Platform" class="nav-logo" />
           <span>VC Platform</span>
         </router-link>
+        
         <div class="nav-links">
-          <router-link to="/projects">項目列表</router-link>
+          <router-link to="/" class="nav-link">
+            <i class="fas fa-home"></i>
+            首頁
+          </router-link>
+          <router-link to="/projects" class="nav-link">
+            <i class="fas fa-rocket"></i>
+            項目列表
+          </router-link>
+          <router-link to="/about" class="nav-link">
+            <i class="fas fa-info-circle"></i>
+            關於我們
+          </router-link>
         </div>
+        
         <div class="nav-auth">
-          <router-link to="/login" class="auth-btn login">登入</router-link>
-          <router-link to="/register" class="auth-btn register">註冊</router-link>
+          <router-link to="/login" class="auth-btn login">
+            <i class="fas fa-sign-in-alt"></i>
+            登入
+          </router-link>
+          <router-link to="/register" class="auth-btn register">
+            <i class="fas fa-user-plus"></i>
+            註冊
+          </router-link>
         </div>
       </nav>
     </header>
@@ -26,6 +45,8 @@
 </template>
 
 <style>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
 .app {
   min-height: 100vh;
   background: #121212;
@@ -35,12 +56,14 @@
 }
 
 header {
-  background: #1e1e1e;
-  border-bottom: 1px solid #333;
-  position: sticky;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  width: 100%;
 }
 
 .navbar {
@@ -48,7 +71,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0 4rem;
-  height: 60px;
+  height: 70px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -59,38 +82,53 @@ header {
   gap: 1rem;
   color: #f5f5f5;
   text-decoration: none;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-brand:hover {
+  transform: translateY(-1px);
 }
 
 .nav-logo {
-  height: 32px;
-  width: 32px;
+  height: 35px;
+  width: 35px;
 }
 
 .nav-links {
   display: flex;
   justify-content: center;
-  flex: 1;
+  gap: 2.5rem;
   margin: 0 2rem;
 }
 
-.nav-links a {
+.nav-link {
   color: #aaa;
   text-decoration: none;
   font-size: 1.1rem;
-  padding: 0.5rem 1.5rem;
-  border-radius: 6px;
-  transition: all 0.3s;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.nav-links a:hover {
+.nav-link i {
+  font-size: 1.1rem;
+}
+
+.nav-link:hover {
   color: #f5f5f5;
   background: rgba(100, 108, 255, 0.1);
+  transform: translateY(-1px);
 }
 
-.nav-links a.router-link-active {
+.nav-link.router-link-active {
   color: #646cff;
+  background: rgba(100, 108, 255, 0.1);
   font-weight: 600;
 }
 
@@ -100,12 +138,19 @@ header {
 }
 
 .auth-btn {
-  padding: 0.5rem 1.2rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 20px;
   font-size: 1rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auth-btn i {
+  font-size: 1rem;
 }
 
 .auth-btn.login {
@@ -115,7 +160,8 @@ header {
 
 .auth-btn.login:hover {
   background: rgba(100, 108, 255, 0.1);
-  box-shadow: 0 0 15px rgba(100, 108, 255, 0.2);
+  box-shadow: 0 0 20px rgba(100, 108, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .auth-btn.register {
@@ -126,17 +172,32 @@ header {
 
 .auth-btn.register:hover {
   background: linear-gradient(90deg, #7a80ff, #4a4ab0);
-  box-shadow: 0 0 15px rgba(100, 108, 255, 0.4);
+  box-shadow: 0 0 20px rgba(100, 108, 255, 0.4);
   transform: translateY(-1px);
 }
 
 main {
+  padding-top: 70px;
   width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0 2rem;
+  }
+  
+  .nav-links {
+    gap: 1.5rem;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 1rem;
+  }
 }
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 0 2rem;
+    padding: 0 1.5rem;
   }
   
   .nav-brand span {
@@ -144,17 +205,25 @@ main {
   }
   
   .nav-links {
-    margin: 0 1rem;
+    gap: 1rem;
   }
   
-  .nav-links a {
-    padding: 0.4rem 1rem;
+  .nav-link {
     font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .nav-link span {
+    display: none;
   }
   
   .auth-btn {
-    padding: 0.4rem 1rem;
+    padding: 0.5rem 1rem;
     font-size: 0.9rem;
+  }
+  
+  .auth-btn span {
+    display: none;
   }
 }
 
@@ -164,17 +233,15 @@ main {
   }
   
   .nav-links {
-    margin: 0 0.5rem;
+    gap: 0.5rem;
   }
   
-  .nav-links a {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.9rem;
+  .nav-link {
+    padding: 0.3rem 0.6rem;
   }
   
   .auth-btn {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
   }
 }
 </style>
