@@ -29,4 +29,18 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email 已被註冊");
         }
     }
+
+    @Operation(summary = "使用者登入", description = "傳入 email / password")
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User user) {
+        return userService.findByEmail(user.getEmail())
+                .map(foundUser -> {
+                    if (foundUser.getPassword().equals(user.getPassword())) {
+                        return ResponseEntity.ok(foundUser);
+                    } else {
+                        return ResponseEntity.badRequest().body("密碼錯誤");
+                    }
+                })
+                .orElse(ResponseEntity.badRequest().body("用戶不存在"));
+    }
 }

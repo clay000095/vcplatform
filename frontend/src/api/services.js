@@ -52,4 +52,5 @@ export const userService = {
   register(user) {
     return api.post('/auth/register', user);
   },
+
 }; 

@@ -78,7 +78,8 @@ public class ProjectControllerTest {
         when(projectService.getByFounder(1L)).thenReturn(Arrays.asList(testProject));
 
         mockMvc.perform(get("/api/projects/my")
-                .param("founderId", "1"))
+                .param("founderId", "1")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(testProject.getId()))
                 .andExpect(jsonPath("$[0].title").value(testProject.getTitle()));
