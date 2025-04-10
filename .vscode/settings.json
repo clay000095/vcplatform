@@ -1,0 +1,16 @@
+{
+    "java.test.config": {
+        "vmArgs": ["-Xmx512M"],
+        "args": [],
+        "env": {}
+    },
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.project.sourcePaths": ["src/main/java"],
+    "java.project.outputPath": "target/classes",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.test.defaultConfig": "default",
+    "java.test.editor.enableShortcuts": true
+} 

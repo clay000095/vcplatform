@@ -95,7 +95,7 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #121212;
+  background: #000000;
   padding: 2rem;
 }
 
