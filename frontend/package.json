@@ -10,6 +10,7 @@
     "vercel-build": "vite build"
   },
   "dependencies": {
+    "@vueuse/motion": "^3.0.3",
     "axios": "^1.8.4",
     "frontend": "file:",
     "pinia": "^3.0.1",

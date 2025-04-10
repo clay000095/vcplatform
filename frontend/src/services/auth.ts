@@ -6,21 +6,18 @@ import type { User, LoginRequest, RegisterRequest, AuthResponse } from '../types
 export const currentUser = ref<User | null>(null);
 export const isAuthenticated = ref(false);
 
-// 設置 axios 請求攔截器，自動添加 token
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 export const authService = {
   // 登入
   async login(data: LoginRequest): Promise<void> {
     try {
       const response = await axios.post<AuthResponse>('/api/auth/login', data);
-      this.setAuthData(response.data);
+      // 直接使用登入響應中的用戶數據
+      const userData = response.data as unknown as User;
+      currentUser.value = userData;
+      isAuthenticated.value = true;
+      // 保存用戶數據到 localStorage
+      localStorage.setItem('user', JSON.stringify(userData));
+      // 不需要保存 token，因為後端沒有返回
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -31,7 +28,11 @@ export const authService = {
   async register(data: RegisterRequest): Promise<void> {
     try {
       const response = await axios.post<AuthResponse>('/api/auth/register', data);
-      this.setAuthData(response.data);
+      // 直接設置用戶數據，不使用 this
+      const userData = response.data.user;
+      currentUser.value = userData;
+      isAuthenticated.value = true;
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('Register error:', error);
       throw error;
@@ -40,7 +41,6 @@ export const authService = {
 
   // 登出
   logout(): void {
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
     currentUser.value = null;
     isAuthenticated.value = false;
@@ -48,23 +48,14 @@ export const authService = {
 
   // 檢查是否已登入
   checkAuth(): boolean {
-    const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     
-    if (token && savedUser) {
+    if (savedUser) {
       currentUser.value = JSON.parse(savedUser);
       isAuthenticated.value = true;
       return true;
     }
     
     return false;
-  },
-
-  // 設置認證數據
-  setAuthData(data: AuthResponse): void {
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    currentUser.value = data.user;
-    isAuthenticated.value = true;
   }
 }; 

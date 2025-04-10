@@ -25,7 +25,6 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.warn('Failed to save token to localStorage:', error);
       }
-      await this.fetchUser();
     },
     
     async fetchUser() {

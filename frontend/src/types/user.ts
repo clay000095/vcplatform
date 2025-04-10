@@ -1,12 +1,10 @@
-export type UserRole = 'FOUNDER' | 'INVESTOR' | 'ADMIN';
+export type UserRole = 'ADMIN' | 'FOUNDER' | 'INVESTOR';
 
 export interface User {
   id: number;
   email: string;
+  password?: string;  // 可選，因為登入後可能不需要
   role: UserRole;
-  name: string;
-  createdAt: string;
-  status: boolean;
 }
 
 export interface LoginRequest {
@@ -22,19 +20,19 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  token: string;
+  token?: string;  // 可選，因為後端可能不返回
   user: User;
 }
 
 export interface Founder extends User {
-  companyName: string;
-  totalRaised: number;
-  projects: Project[];
+  companyName?: string;
+  totalRaised?: number;
+  projects?: Project[];
 }
 
 export interface Investor extends User {
-  totalInvested: number;
-  investments: Investment[];
+  totalInvested?: number;
+  investments?: Investment[];
 }
 
 export interface Project {

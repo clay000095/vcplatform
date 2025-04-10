@@ -19,10 +19,10 @@
             <i class="fas fa-rocket"></i>
             項目列表
           </router-link>
-          <router-link to="/about" class="nav-link">
+          <!-- <router-link to="/about" class="nav-link">
             <i class="fas fa-info-circle"></i>
             關於我們
-          </router-link>
+          </router-link> -->
         </div>
         
         <div class="nav-auth">

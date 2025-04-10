@@ -64,23 +64,8 @@ const handleLogin = async () => {
       password: password.value
     })
     
-    // 登入成功後根據用戶角色導航
-    const userRole = authStore.user?.role
-    if (userRole) {
-      switch (userRole) {
-        case 'ADMIN':
-          router.push('/admin/dashboard')
-          break
-        case 'FOUNDER':
-          router.push('/founder/dashboard')
-          break
-        case 'INVESTOR':
-          router.push('/investor/dashboard')
-          break
-        default:
-          router.push('/')
-      }
-    }
+    // 登入成功後直接跳回首頁
+    router.push('/')
   } catch (err) {
     error.value = err.message || '登入失敗，請稍後再試'
   } finally {
