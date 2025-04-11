@@ -35,7 +35,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody User user) {
         return userService.findByEmail(user.getEmail())
                 .map(foundUser -> {
-                    if (foundUser.getPassword().equals(user.getPassword())) {
+                    if (userService.validatePassword(user.getPassword(), foundUser.getPassword())) {
                         return ResponseEntity.ok(foundUser);
                     } else {
                         return ResponseEntity.badRequest().body("密碼錯誤");
