@@ -3,6 +3,7 @@ package com.vcplatform.controller;
 
 import com.vcplatform.model.User;
 import com.vcplatform.service.UserService;
+import com.vcplatform.config.JwtConfig;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,6 +23,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private JwtConfig jwtConfig;
 
     @Operation(summary = "使用者註冊", description = "傳入 email / password / role")
     @PostMapping("/register")
@@ -37,7 +44,15 @@ public class AuthController {
         return userService.findByEmail(user.getEmail())
                 .map(foundUser -> {
                     if (foundUser.getPassword().equals(user.getPassword())) {
-                        return ResponseEntity.ok(foundUser);
+                        // 生成JWT token
+                        String token = jwtConfig.generateToken(foundUser.getEmail(), foundUser.getRole());
+                        
+                        // 創建響應對象
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("token", token);
+                        response.put("user", foundUser);
+                        
+                        return ResponseEntity.ok(response);
                     } else {
                         return ResponseEntity.badRequest().body("密碼錯誤");
                     }

@@ -56,7 +56,7 @@ export const useAuthStore = defineStore('auth', {
 
     async login(credentials) {
       try {
-        // 1. 登入獲取用戶信息
+        // 1. 登入獲取用戶信息和token
         const loginResponse = await userService.login(credentials);
         console.log('Login response:', loginResponse);
 
@@ -64,25 +64,23 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('登入失敗：無效的響應');
         }
 
-        // 2. 保存用戶信息
-        const userData = loginResponse.data;
-        if (!userData || !userData.id) {
-          throw new Error('登入失敗：無效的用戶信息');
+        // 2. 從響應中提取token和用戶信息
+        const { token, user: userData } = loginResponse.data;
+        
+        if (!token || !userData || !userData.id) {
+          throw new Error('登入失敗：無效的用戶信息或token');
         }
         
-        // 3. 生成一個臨時 token（實際應用中應該由後端生成）
-        // 這裡我們使用用戶 ID 和時間戳生成一個簡單的 token
-        const tempToken = btoa(`${userData.id}:${Date.now()}`);
-        
-        // 4. 設置狀態
+        // 3. 設置狀態
         this.user = userData;
-        this.token = tempToken;
+        this.token = token;
+        // 設置token過期時間為24小時後
         this.tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
         
-        // 5. 保存到 localStorage
+        // 4. 保存到 localStorage
         this.saveToLocalStorage();
         
-        // 6. 記錄狀態
+        // 5. 記錄狀態
         logState('Login', this);
         
         return true;

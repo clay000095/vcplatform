@@ -14,14 +14,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vcplatform.config.TestSecurityConfig;
 import com.vcplatform.model.Project;
 import com.vcplatform.service.ProjectService;
 
 @WebMvcTest(ProjectController.class)
+@Import(TestSecurityConfig.class)
 public class ProjectControllerTest {
 
     @Autowired

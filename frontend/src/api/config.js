@@ -18,9 +18,6 @@ api.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
-    // Ensure CORS headers are properly set
-    config.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173';
-    config.headers['Access-Control-Allow-Credentials'] = 'true';
     return config;
   },
   error => {
@@ -35,6 +32,13 @@ api.interceptors.response.use(
   error => {
     if (error.response) {
       console.error('Response error:', error.response.data);
+      
+      // 如果是401錯誤，可能是token過期，清除本地狀態
+      if (error.response.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('tokenExpiry');
+      }
     } else if (error.request) {
       console.error('Request error:', error.request);
     } else {
