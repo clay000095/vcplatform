@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Auth 認證", description = "帳號註冊與登入")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AuthController {
 
     @Autowired
@@ -42,5 +43,11 @@ public class AuthController {
                     }
                 })
                 .orElse(ResponseEntity.badRequest().body("用戶不存在"));
+    }
+    
+    @Operation(summary = "使用者登出", description = "登出系統")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok().body("登出成功");
     }
 }

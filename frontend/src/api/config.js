@@ -18,6 +18,9 @@ api.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    // Ensure CORS headers are properly set
+    config.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173';
+    config.headers['Access-Control-Allow-Credentials'] = 'true';
     return config;
   },
   error => {

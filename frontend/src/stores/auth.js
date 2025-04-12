@@ -42,11 +42,8 @@ export const useAuthStore = defineStore('auth', {
           this.user = JSON.parse(userStr);
           this.tokenExpiry = expiryStr ? new Date(expiryStr) : null;
           
-          // 如果 token 未過期，獲取最新的用戶信息
-          if (!isTokenExpired(this.tokenExpiry)) {
-            this.fetchUser();
-          } else {
-            // token 已過期，清除所有狀態
+          // 如果 token 已過期，清除所有狀態
+          if (isTokenExpired(this.tokenExpiry)) {
             this.logout();
           }
         }
@@ -87,6 +84,8 @@ export const useAuthStore = defineStore('auth', {
         
         // 6. 記錄狀態
         logState('Login', this);
+        
+        return true;
       } catch (error) {
         console.error('Login failed:', error);
         this.clearAuthState();
@@ -94,35 +93,21 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     
-    async fetchUser() {
-      try {
-        const response = await userService.getUserProfile();
-        if (!response.data) {
-          throw new Error('Invalid user profile response');
-        }
-        this.user = response.data;
-        this.saveToLocalStorage();
-        logState('Fetch User', this);
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-        if (error.response?.status === 401) {
-          this.logout();
-        }
-        throw error;
-      }
-    },
-
     async logout() {
+      // 先清除本地狀態
+      this.clearAuthState();
+      
+      // 然後嘗試調用登出API
       try {
         if (this.token) {
           await userService.logout();
         }
       } catch (error) {
         console.warn('Logout API call failed:', error);
-      } finally {
-        this.clearAuthState();
-        logState('Logout', this);
+        // API調用失敗不影響本地登出
       }
+      
+      logState('Logout', this);
     },
 
     saveToLocalStorage() {
