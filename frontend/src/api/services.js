@@ -53,4 +53,13 @@ export const userService = {
     return api.post('/auth/register', user);
   },
 
+  // 獲取用戶信息
+  getUserProfile() {
+    return api.get('/auth/profile');
+  },
+
+  // 登出
+  logout() {
+    return api.post('/auth/logout');
+  }
 }; 

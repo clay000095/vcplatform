@@ -1,15 +1,28 @@
 import { defineStore } from 'pinia';
 import { userService } from '../api/services';
 
+// 開發環境下的狀態監控
+const logState = (action, state) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.group(`Auth Store - ${action}`);
+    console.log('User:', state.user);
+    console.log('Token:', state.token ? '****' + state.token.slice(-4) : null);
+    console.log('Token Expiry:', state.tokenExpiry);
+    console.log('Is Authenticated:', !!state.token && !!state.user && !isTokenExpired(state.tokenExpiry));
+    console.groupEnd();
+  }
+};
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    token: null
+    token: null,
+    tokenExpiry: null
   }),
   
   getters: {
     // 檢查是否已登入
-    isAuthenticated: (state) => !!state.token && !!state.user,
+    isAuthenticated: (state) => !!state.token && !!state.user && !isTokenExpired(state.tokenExpiry),
     
     // 取得用戶角色
     userRole: (state) => state.user?.role || null,
@@ -23,41 +36,79 @@ export const useAuthStore = defineStore('auth', {
       try {
         this.token = localStorage.getItem('token');
         const userStr = localStorage.getItem('user');
+        const expiryStr = localStorage.getItem('tokenExpiry');
         
         if (this.token && userStr) {
           this.user = JSON.parse(userStr);
-          this.fetchUser();
+          this.tokenExpiry = expiryStr ? new Date(expiryStr) : null;
+          
+          // 如果 token 未過期，獲取最新的用戶信息
+          if (!isTokenExpired(this.tokenExpiry)) {
+            this.fetchUser();
+          } else {
+            // token 已過期，清除所有狀態
+            this.logout();
+          }
         }
+        logState('Initialize', this);
       } catch (error) {
         console.warn('Failed to access localStorage:', error);
-        this.token = null;
-        this.user = null;
+        this.clearAuthState();
       }
     },
 
     async login(credentials) {
-      const response = await userService.login(credentials);
-      this.token = response.data.token;
-      this.user = response.data.user;
-
       try {
-        localStorage.setItem('token', this.token);
-        localStorage.setItem('user', JSON.stringify(this.user));
+        // 1. 登入獲取用戶信息
+        const loginResponse = await userService.login(credentials);
+        console.log('Login response:', loginResponse);
+
+        if (!loginResponse || !loginResponse.data) {
+          throw new Error('登入失敗：無效的響應');
+        }
+
+        // 2. 保存用戶信息
+        const userData = loginResponse.data;
+        if (!userData || !userData.id) {
+          throw new Error('登入失敗：無效的用戶信息');
+        }
+        
+        // 3. 生成一個臨時 token（實際應用中應該由後端生成）
+        // 這裡我們使用用戶 ID 和時間戳生成一個簡單的 token
+        const tempToken = btoa(`${userData.id}:${Date.now()}`);
+        
+        // 4. 設置狀態
+        this.user = userData;
+        this.token = tempToken;
+        this.tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        
+        // 5. 保存到 localStorage
+        this.saveToLocalStorage();
+        
+        // 6. 記錄狀態
+        logState('Login', this);
       } catch (error) {
-        console.warn('Failed to save to localStorage:', error);
+        console.error('Login failed:', error);
+        this.clearAuthState();
+        throw error;
       }
     },
     
     async fetchUser() {
       try {
         const response = await userService.getUserProfile();
+        if (!response.data) {
+          throw new Error('Invalid user profile response');
+        }
         this.user = response.data;
-        localStorage.setItem('user', JSON.stringify(this.user));
+        this.saveToLocalStorage();
+        logState('Fetch User', this);
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
         if (error.response?.status === 401) {
           this.logout();
         }
+        throw error;
       }
     },
 
@@ -68,17 +119,50 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         console.warn('Logout API call failed:', error);
+      } finally {
+        this.clearAuthState();
+        logState('Logout', this);
       }
+    },
 
+    saveToLocalStorage() {
+      try {
+        if (!this.token || !this.user) {
+          throw new Error('Cannot save invalid auth state');
+        }
+        
+        localStorage.setItem('token', this.token);
+        localStorage.setItem('user', JSON.stringify(this.user));
+        localStorage.setItem('tokenExpiry', this.tokenExpiry.toISOString());
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Auth state saved to localStorage');
+        }
+      } catch (error) {
+        console.warn('Failed to save to localStorage:', error);
+        this.clearAuthState();
+      }
+    },
+
+    clearAuthState() {
       this.user = null;
       this.token = null;
-
+      this.tokenExpiry = null;
       try {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('tokenExpiry');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Auth state cleared from localStorage');
+        }
       } catch (error) {
         console.warn('Failed to remove from localStorage:', error);
       }
     }
   }
-}); 
+});
+
+// 檢查 token 是否過期
+function isTokenExpired(expiryDate) {
+  if (!expiryDate) return true;
+  return new Date() > new Date(expiryDate);
+} 

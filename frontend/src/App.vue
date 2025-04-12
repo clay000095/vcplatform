@@ -1,4 +1,13 @@
 <script setup>
+import { useAuthStore } from './stores/auth';
+import { storeToRefs } from 'pinia';
+
+const authStore = useAuthStore();
+const { isAuthenticated, userName } = storeToRefs(authStore);
+
+const handleLogout = async () => {
+  await authStore.logout();
+};
 </script>
 
 <template>
@@ -26,14 +35,23 @@
         </div>
         
         <div class="nav-auth">
-          <router-link to="/login" class="auth-btn login">
-            <i class="fas fa-sign-in-alt"></i>
-            登入
-          </router-link>
-          <router-link to="/register" class="auth-btn register">
-            <i class="fas fa-user-plus"></i>
-            註冊
-          </router-link>
+          <template v-if="isAuthenticated">
+            <span class="user-name">{{ userName }}</span>
+            <button @click="handleLogout" class="auth-btn logout">
+              <i class="fas fa-sign-out-alt"></i>
+              登出
+            </button>
+          </template>
+          <template v-else>
+            <router-link to="/login" class="auth-btn login">
+              <i class="fas fa-sign-in-alt"></i>
+              登入
+            </router-link>
+            <router-link to="/register" class="auth-btn register">
+              <i class="fas fa-user-plus"></i>
+              註冊
+            </router-link>
+          </template>
         </div>
       </nav>
     </header>
@@ -174,6 +192,28 @@ header {
   background: linear-gradient(90deg, #7a80ff, #4a4ab0);
   box-shadow: 0 0 20px rgba(100, 108, 255, 0.4);
   transform: translateY(-1px);
+}
+
+.auth-btn.logout {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-btn.logout:hover {
+  background: #ff6666;
+  box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+  transform: translateY(-1px);
+}
+
+.user-name {
+  color: #f5f5f5;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
 }
 
 main {
