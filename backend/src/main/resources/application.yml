@@ -31,15 +31,9 @@ spring:
         static-locations: classpath:/static/
         add-mappings: true
 
-# JWT Configuration
-jwt:
-  secret: your-secret-key-here-must-be-at-least-32-characters
-  expiration: 86400000  # 24 hours in milliseconds
-
 logging:
   level:
     '[org.hibernate.SQL]': DEBUG
     '[org.hibernate.type.descriptor.sql]': TRACE
     '[root]': INFO
     '[org.springframework.web]': DEBUG
-    '[org.springframework.security]': DEBUG
