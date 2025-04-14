@@ -56,7 +56,7 @@ export const useAuthStore = defineStore('auth', {
 
     async login(credentials) {
       try {
-        // 1. 登入獲取用戶信息和token
+        // 1. 登入獲取用戶訊息和token
         const loginResponse = await userService.login(credentials);
         console.log('Login response:', loginResponse);
 
@@ -64,11 +64,11 @@ export const useAuthStore = defineStore('auth', {
           throw new Error('登入失敗：無效的響應');
         }
 
-        // 2. 從響應中提取token和用戶信息
+        // 2. 從響應中提取token和用戶訊息
         const { token, user: userData } = loginResponse.data;
         
         if (!token || !userData || !userData.id) {
-          throw new Error('登入失敗：無效的用戶信息或token');
+          throw new Error('登入失敗：無效的用戶訊息或token');
         }
         
         // 3. 設置狀態
