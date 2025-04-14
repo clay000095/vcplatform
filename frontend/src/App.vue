@@ -3,10 +3,20 @@ import { useAuthStore } from './stores/auth';
 import { storeToRefs } from 'pinia';
 
 const authStore = useAuthStore();
-const { isAuthenticated, userName } = storeToRefs(authStore);
+const { isAuthenticated, userName, userRole } = storeToRefs(authStore);
 
 const handleLogout = async () => {
   await authStore.logout();
+};
+
+// 將角色英文轉換為中文顯示
+const getRoleDisplayName = (role) => {
+  const roleMap = {
+    'ADMIN': '管理員',
+    'INVESTOR': '投資者',
+    'FOUNDER': '創始人'
+  };
+  return roleMap[role] || role;
 };
 </script>
 
@@ -36,7 +46,12 @@ const handleLogout = async () => {
         
         <div class="nav-auth">
           <template v-if="isAuthenticated">
-            <span class="user-name">{{ userName }}</span>
+            <div class="user-info">
+              <span class="user-role" :class="'role-' + userRole.toLowerCase()">
+                {{ getRoleDisplayName(userRole) }}
+              </span>
+              <span class="user-name">{{ userName }}</span>
+            </div>
             <button @click="handleLogout" class="auth-btn logout">
               <i class="fas fa-sign-out-alt"></i>
               登出
@@ -153,6 +168,39 @@ header {
 .nav-auth {
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.user-role {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.role-admin {
+  background: linear-gradient(90deg, #ff5722, #ff9800);
+}
+
+.role-investor {
+  background: linear-gradient(90deg, #2196f3, #03a9f4);
+}
+
+.role-founder {
+  background: linear-gradient(90deg, #8bc34a, #4caf50);
+}
+
+.user-name {
+  color: #f5f5f5;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .auth-btn {
@@ -207,15 +255,6 @@ header {
   transform: translateY(-1px);
 }
 
-.user-name {
-  color: #f5f5f5;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-right: 1rem;
-  display: flex;
-  align-items: center;
-}
-
 main {
   padding-top: 70px;
   width: 100%;
@@ -253,35 +292,40 @@ main {
     padding: 0.4rem 0.8rem;
   }
   
-  .nav-link span {
-    display: none;
+  .nav-link i {
+    font-size: 1rem;
+  }
+  
+  .user-role {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .user-name {
+    font-size: 0.9rem;
   }
   
   .auth-btn {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
   }
-  
-  .auth-btn span {
-    display: none;
-  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .navbar {
     padding: 0 1rem;
   }
   
   .nav-links {
-    gap: 0.5rem;
+    display: none;
   }
   
-  .nav-link {
-    padding: 0.3rem 0.6rem;
+  .auth-btn i {
+    margin-right: 0;
   }
   
-  .auth-btn {
-    padding: 0.4rem 0.8rem;
+  .auth-btn span {
+    display: none;
   }
 }
 </style>
