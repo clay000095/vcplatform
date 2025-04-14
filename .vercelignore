@@ -1,0 +1,7 @@
+backend
+.mvn
+.vscode
+.git
+.github
+target
+node_modules 
