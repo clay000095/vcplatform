@@ -1,2 +1,3 @@
 VC創投平台
-![image](https://github.com/user-attachments/assets/ff8287bd-391d-47a9-83f7-a599c1299781)
+![image](https://github.com/user-attachments/assets/b034d9b7-a471-428e-a458-6029d85bca52)
+
