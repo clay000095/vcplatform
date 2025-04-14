@@ -1,134 +1,73 @@
 <template>
-  <div class="project-detail" v-if="project">
-    <div class="project-header">
-      <div class="container">
-        <h1>{{ project.name }}</h1>
-        <div class="meta">
-          <span :class="['status', getStatusClass(project.status)]">
-            {{ projectStatus[project.status] }}
-          </span>
-          <span class="category">{{ getCategoryName(project.category) }}</span>
-          <span class="creator">提案人：{{ project.creator }}</span>
-        </div>
-      </div>
+  <div class="project-detail-page">
+    <div v-if="loading" class="loading">
+      <div class="spinner"></div>
+      <p>載入中...</p>
     </div>
-
-    <div class="container">
+    
+    <div v-else-if="error" class="error">
+      <p>{{ error }}</p>
+      <button @click="fetchProject" class="retry-btn">重試</button>
+    </div>
+    
+    <div v-else-if="!project" class="no-project">
+      <p>找不到該項目</p>
+      <router-link to="/projects" class="back-btn">返回項目列表</router-link>
+    </div>
+    
+    <div v-else class="project-container">
+      <div class="project-header">
+        <div class="category-tag">{{ getCategoryName(project.category) }}</div>
+        <h1>{{ project.title }}</h1>
+        <p class="project-id">#{{ project.id }}</p>
+      </div>
+      
       <div class="project-content">
-        <div class="main-content">
-          <div class="project-image">
-            <img :src="project.image || '/default-project.jpg'" :alt="project.name">
-          </div>
-          
-          <div class="project-info">
-            <h2>項目介紹</h2>
-            <p>{{ project.description }}</p>
-            
-            <h2>項目進度</h2>
-            <div class="progress-section">
-              <div class="progress-bar">
-                <div class="progress" :style="{ width: getProgressPercentage(project) + '%' }"></div>
-              </div>
-              <div class="progress-stats">
-                <div class="stat">
-                  <span class="value">¥{{ formatNumber(project.raisedAmount || 0) }}</span>
-                  <span class="label">已籌集</span>
-                </div>
-                <div class="stat">
-                  <span class="value">{{ getProgressPercentage(project) }}%</span>
-                  <span class="label">達成率</span>
-                </div>
-                <div class="stat">
-                  <span class="value">{{ project.daysLeft || 0 }}</span>
-                  <span class="label">剩餘天數</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="project-description">
+          <h2>項目簡介</h2>
+          <p>{{ project.description }}</p>
         </div>
         
-        <div class="side-content">
-          <div class="investment-card">
-            <h3>投資此項目</h3>
-            <div class="investment-form">
-              <div class="form-group">
-                <label>投資金額</label>
-                <input 
-                  type="number" 
-                  v-model="investmentAmount" 
-                  placeholder="請輸入投資金額"
-                  min="1"
-                >
-              </div>
-              <button 
-                class="invest-btn" 
-                @click="handleInvest"
-                :disabled="!investmentAmount || loading"
-              >
-                {{ loading ? '處理中...' : '立即投資' }}
-              </button>
-            </div>
+        <div class="project-info-card">
+          <div class="info-item">
+            <span class="label">目標金額</span>
+            <span class="value">${{ formatNumber(project.targetAmount) }}</span>
           </div>
+          
+          <div class="info-item">
+            <span class="label">當前金額</span>
+            <span class="value">${{ formatNumber(project.currentAmount) }}</span>
+          </div>
+          
+          <div class="progress-container">
+            <span class="label">募資進度</span>
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{ width: getProgressPercentage(project) + '%' }"></div>
+            </div>
+            <span class="progress-text">{{ getProgressPercentage(project) }}%</span>
+          </div>
+          
+          <button class="invest-btn">投資此項目</button>
         </div>
       </div>
     </div>
-  </div>
-  
-  <div v-else-if="loading" class="loading">
-    <div class="spinner"></div>
-    <p>載入中...</p>
-  </div>
-  
-  <div v-else class="error">
-    <p>{{ error || '項目不存在' }}</p>
-    <router-link to="/projects">
-      <button>返回項目列表</button>
-    </router-link>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { projectService, investmentService } from '../api/services';
+import { projectService } from '../api/services';
 
 const route = useRoute();
 const router = useRouter();
 const project = ref(null);
 const loading = ref(true);
 const error = ref(null);
-const investmentAmount = ref('');
-
-const projectStatus = {
-  PENDING: '審核中',
-  APPROVED: '募資中',
-  COMPLETED: '已完成',
-  FAILED: '未達標'
-};
-
-const getStatusClass = (status) => {
-  return {
-    'status-pending': status === 'PENDING',
-    'status-approved': status === 'APPROVED',
-    'status-completed': status === 'COMPLETED',
-    'status-failed': status === 'FAILED'
-  };
-};
-
-const getCategoryName = (category) => {
-  const categories = {
-    'TECH': '科技',
-    'HEALTH': '健康',
-    'FINANCE': '金融',
-    'EDUCATION': '教育',
-    'OTHER': '其他'
-  };
-  return categories[category] || category;
-};
 
 const getProgressPercentage = (project) => {
   if (!project.targetAmount || project.targetAmount === 0) return 0;
-  const percentage = (project.raisedAmount || 0) / project.targetAmount * 100;
+  const percentage = (project.currentAmount / project.targetAmount) * 100;
   return Math.min(Math.round(percentage), 100);
 };
 
@@ -136,35 +75,27 @@ const formatNumber = (num) => {
   return num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
 };
 
+const getCategoryName = (category) => {
+  const categories = {
+    'TECH': '科技創新',
+    'HEALTH': '健康醫療',
+    'FINANCE': '金融科技',
+    'EDUCATION': '教育科技'
+  };
+  return categories[category] || category;
+};
+
 const fetchProject = async () => {
   loading.value = true;
   error.value = null;
   
   try {
-    const response = await projectService.getProjectById(route.params.id);
+    const projectId = route.params.id;
+    const response = await projectService.getProjectById(projectId);
     project.value = response.data;
   } catch (err) {
     console.error('Failed to fetch project:', err);
-    error.value = err.response?.data?.message || '獲取項目失敗';
-  } finally {
-    loading.value = false;
-  }
-};
-
-const handleInvest = async () => {
-  if (!investmentAmount.value) return;
-  
-  loading.value = true;
-  try {
-    await investmentService.createInvestment({
-      projectId: project.value.id,
-      amount: Number(investmentAmount.value)
-    });
-    // 重新獲取項目資訊以更新進度
-    await fetchProject();
-    investmentAmount.value = '';
-  } catch (err) {
-    error.value = err.response?.data?.message || '投資失敗';
+    error.value = err.response?.data?.message || '取得項目詳情失敗';
   } finally {
     loading.value = false;
   }
@@ -174,36 +105,87 @@ onMounted(fetchProject);
 </script>
 
 <style scoped>
-.project-detail {
-  padding-bottom: 4rem;
+.project-detail-page {
+  padding: 2rem;
+  background-color: #121212;
+  min-height: calc(100vh - 60px);
+  color: #f5f5f5;
+  width: 100%;
+}
+
+.loading, .error, .no-project {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #646cff;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.retry-btn, .back-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(90deg, #646cff, #3b3b8f);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover, .back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
+}
+
+.project-container {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .project-header {
-  background: var(--color-background-soft);
-  padding: 2rem 0;
   margin-bottom: 2rem;
+  text-align: center;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  background: rgba(100, 108, 255, 0.2);
+  color: #646cff;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .project-header h1 {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: var(--color-heading);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #646cff, #3b3b8f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.meta {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.status, .category {
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-}
-
-.creator {
-  color: var(--color-text-light);
+.project-id {
+  color: #aaa;
+  font-size: 1rem;
 }
 
 .project-content {
@@ -212,155 +194,99 @@ onMounted(fetchProject);
   gap: 2rem;
 }
 
-.project-image {
-  margin-bottom: 2rem;
-  border-radius: 12px;
-  overflow: hidden;
+.project-description {
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.project-image img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
+.project-description h2 {
+  margin-bottom: 1rem;
+  color: #f5f5f5;
 }
 
-.project-info h2 {
+.project-description p {
+  line-height: 1.6;
+  color: #ddd;
+}
+
+.project-info-card {
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  height: fit-content;
+}
+
+.info-item {
+  margin-bottom: 1.5rem;
+}
+
+.info-item .label {
+  display: block;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.info-item .value {
   font-size: 1.5rem;
-  margin: 2rem 0 1rem;
-  color: var(--color-heading);
+  font-weight: 600;
+  color: #f5f5f5;
 }
 
-.progress-section {
-  margin-top: 1rem;
+.progress-container {
+  margin-bottom: 1.5rem;
+}
+
+.progress-container .label {
+  display: block;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .progress-bar {
-  height: 8px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  height: 10px;
+  background: #333;
+  border-radius: 5px;
   overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.progress {
-  height: 100%;
-  background: var(--color-primary);
-  transition: width 0.3s ease;
-}
-
-.progress-stats {
-  display: flex;
-  justify-content: space-between;
-}
-
-.stat {
-  text-align: center;
-}
-
-.value {
-  display: block;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--color-heading);
-}
-
-.label {
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-}
-
-.investment-card {
-  background: var(--color-background-soft);
-  padding: 1.5rem;
-  border-radius: 12px;
-  position: sticky;
-  top: 2rem;
-}
-
-.investment-card h3 {
-  margin-bottom: 1.5rem;
-  color: var(--color-heading);
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
   margin-bottom: 0.5rem;
-  color: var(--color-text);
 }
 
-input {
-  width: 100%;
-  padding: 0.8rem;
-  border: 2px solid var(--color-border);
-  border-radius: 6px;
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #646cff, #3b3b8f);
+  border-radius: 5px;
+}
+
+.progress-text {
   font-size: 1rem;
-  transition: all 0.3s;
-}
-
-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.1);
+  color: #f5f5f5;
 }
 
 .invest-btn {
   width: 100%;
   padding: 1rem;
-  background: var(--color-primary);
-  color: white;
+  background: linear-gradient(90deg, #646cff, #3b3b8f);
   border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
 }
 
-.invest-btn:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-}
-
-.invest-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.loading {
-  text-align: center;
-  padding: 4rem 0;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
-  border-top-color: var(--color-primary);
-  margin: 0 auto 1rem;
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error {
-  text-align: center;
-  padding: 4rem 0;
+.invest-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
 }
 
 @media (max-width: 768px) {
   .project-content {
     grid-template-columns: 1fr;
-  }
-  
-  .investment-card {
-    position: static;
-    margin-top: 2rem;
   }
 }
 </style> 

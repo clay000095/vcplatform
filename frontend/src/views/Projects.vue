@@ -1,6 +1,6 @@
 <template>
   <div class="projects-page">
-    <div class="category-nav">
+    <div class="category-nav" v-if="!isProjectDetail">
       <router-link 
         to="/projects"
         class="category-link"
@@ -38,6 +38,10 @@ const categories = [
 
 const currentCategory = computed(() => {
   return route.params.category || '';
+});
+
+const isProjectDetail = computed(() => {
+  return route.name === 'project-detail';
 });
 </script>
 

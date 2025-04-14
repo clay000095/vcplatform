@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/auth'
 import Home from '../views/Home.vue'
 import Projects from '../views/Projects.vue'
 import ProjectList from '../views/ProjectList.vue'
+import ProjectDetail from '../views/ProjectDetail.vue'
 import CategoryProjects from '../components/CategoryProjects.vue'
 
 const routes = [
@@ -40,6 +41,12 @@ const routes = [
         props: true
       }
     ]
+  },
+  {
+    path: '/projects/:id',
+    name: 'project-detail',
+    component: ProjectDetail,
+    props: true
   },
   {
     path: '/admin/dashboard',
