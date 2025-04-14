@@ -10,15 +10,15 @@
     "vercel-build": "vite build"
   },
   "dependencies": {
-    "@vueuse/motion": "^3.0.3",
-    "axios": "^1.8.4",
+    "@vueuse/motion": "^2.0.0",
+    "axios": "^1.6.2",
     "frontend": "file:",
-    "pinia": "^3.0.1",
-    "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "pinia": "^2.1.7",
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.2.0"
+    "@vitejs/plugin-vue": "^4.5.2",
+    "vite": "^5.0.10"
   }
 }
