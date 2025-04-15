@@ -9,6 +9,30 @@
 
 </div>
 
+<div align="center">
+  <h2> 創業投資管理平台 </h2>
+</div>
+
+<p align="center">
+  <kbd>
+    <img src="https://github.com/user-attachments/assets/df8605d8-50ea-4dd7-9476-b7600c4a8226" alt="VC平台主畫面" width="100%"/>
+  </kbd>
+</p>
+
+<div align="center">
+  <p><em> 簡潔畫面 </em></p>
+</div>
+
+<p align="center">
+  <kbd>
+    <img src="https://github.com/user-attachments/assets/65b9402b-8e0b-434f-8cd2-472da2bdc53b" alt="VC平台數據分析" width="100%"/>
+  </kbd>
+</p>
+
+<div align="center">
+  <p><em> 清晰專案列表 </em></p>
+</div>
+
 ## 🌟 功能特色
 
 ### 👤 用戶管理
