@@ -6,8 +6,6 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-3.8-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![VC平台](https://github.com/user-attachments/assets/df8605d8-50ea-4dd7-9476-b7600c4a8226)
-![VC平台2](https://github.com/user-attachments/assets/65b9402b-8e0b-434f-8cd2-472da2bdc53b)
 
 
 </div>
