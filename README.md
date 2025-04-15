@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # VC Platform
 
 <div align="center">
@@ -36,18 +35,6 @@
 - 專案績效報告
 - 風險評估指標
 
-### 💬 溝通協作
-- 即時訊息系統
-- 團隊協作空間
-- 文件共享功能
-- 會議排程管理
-
-### 🔔 通知系統
-- 重要事件提醒
-- 投資機會通知
-- 專案更新提醒
-- 系統狀態通知
-
 ### 📱 響應式設計
 - 支援多設備訪問
 - 優化移動端體驗
@@ -63,10 +50,5 @@
 ---
 
 <div align="center">
-Made with ❤️ by VC Platform Team
+Made by VC Platform
 </div>
-=======
-VC創投平台
-![image](https://github.com/user-attachments/assets/b034d9b7-a471-428e-a458-6029d85bca52)
-
->>>>>>> 7eb62c3566e6c1c22ef5d791dbf775672ccd782a
